@@ -200,6 +200,7 @@ void init()
 	srand(time(0));
 	tNextNo = rand() % 7;
 	lvl = 1;
+	score=0;
 }
 
 void spawn()
@@ -347,7 +348,7 @@ int main()
 		cout << "游戏结束" << endl;
 		cout << "你的分数：" << score << endl;
 		cout << "按r开始新游戏" << endl;
-		while (1)
+		while (true)
 			if (kbhit() && getch() == 'r')
 				break;
 		gotoxy(0, HEIGHT + 2);
