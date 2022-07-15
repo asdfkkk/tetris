@@ -141,7 +141,7 @@ void printBoard()
 			drawAt(x, y, (board[y][x] ? shapeChar : noChar));
 }
 
-void elimLines()
+void elimLines(bool anim = true)
 {
 	vector<int> fullLines;
 	for (int row = 1; row <= HEIGHT; row++)
@@ -155,16 +155,18 @@ void elimLines()
 		if (full) fullLines.push_back(row);
 	}
 	int nLines = fullLines.size();
-	lineCnt += nLines;
-	score += scoreTable[nLines];
-	for (int i = 1; i <= WIDTH / 2; i++)
-	{
-		for (int iR = 0; iR < nLines; iR++)
+	if(anim){
+		lineCnt += nLines;
+		score += scoreTable[nLines];
+		for (int i = 1; i <= WIDTH / 2; i++)
 		{
-			drawAt(WIDTH / 2 - i + 1, fullLines[iR], noChar);
-			drawAt(WIDTH / 2 + i,     fullLines[iR], noChar);
+			for (int iR = 0; iR < nLines; iR++)
+			{
+				drawAt(WIDTH / 2 - i + 1, fullLines[iR], noChar);
+				drawAt(WIDTH / 2 + i,     fullLines[iR], noChar);
+			}
+			Sleep(70);
 		}
-		Sleep(70);
 	}
 	for (int iR = 0; iR < nLines; iR++)
 	{
@@ -172,10 +174,8 @@ void elimLines()
 			for (int j = 1; j <= WIDTH; j++)
 				board[i][j] = board[i - 1][j];
 	}
-	printBoard();
+	if(anim)printBoard();
 }
-
-int findHardShape();
 
 void init()
 {
@@ -202,6 +202,7 @@ int findMinHeight(int no){
 			}
 			y--;
 			toBoard(x, y, sh);
+			elimLines(false);
 			int row = 1;
 			for (; ; row++)
 			{
