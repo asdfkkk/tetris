@@ -175,13 +175,14 @@ void elimLines()
 	printBoard();
 }
 
+int findHardShape();
+
 void init()
 {
 	memset(board, 0, sizeof(board));
 	drawTetrion();
 	printBoard();
 	srand(time(0));
-	tNextNo = rand() % 7;
 	score = 0;
 }
 
@@ -222,10 +223,20 @@ int findMinHeight(int no){
 	return h;
 }
 
+int findHardShape(){
+	int h = 0, tno;
+	for(int no = 0; no < 7; no++){
+		if (findMinHeight(no) > h){
+			h = findMinHeight(no);
+			tno = no;
+		}
+	}
+	return tno;
+}
+
 void spawn()
 {
-	tNo = tNextNo;
-	tNextNo = rand() % 7;
+	tNo = findHardShape();
 	copyShape(shape[tNo], tShape);
 	tx = WIDTH / 2 - (size[tNo] + 1) / 2 + 1;
 	ty = -1;
@@ -273,9 +284,6 @@ void info()
 	gotoxy(WIDTH + 4, 5);
 	cout << "SCORE: " << score   << "              ";
 	gotoxy(WIDTH + 4, 6);
-	cout << "NEXT:";
-	drawShape(WIDTH + 6, 8, emptyShape    , true , false);
-	drawShape(WIDTH + 6, 8, shape[tNextNo], false, false);
 }
 
 bool keyPress(int key)
