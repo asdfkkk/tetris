@@ -98,19 +98,11 @@ void drawTetrion()
 		drawAt(WIDTH + 1, y, tetrionChar);
 }
 
-void drawShape(int x, int y, const int sh[4][4], bool erase = false)
+void drawShape(int x, int y, const int sh[4][4], bool erase = false, bool bound = true)
 {
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++)
-			if (sh[j][i]&&1<=x+i&&x+i<=WIDTH&&1<=y+j&&y+j<=HEIGHT)
-				drawAt(x + i, y + j, (erase ? noChar : shapeChar));
-}
-
-void drawNextShape(int x, int y, const int sh[4][4], bool erase = false)
-{
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 4; j++)
-			if (sh[j][i])
+			if (sh[j][i]&&(!bound||(1<=x+i&&x+i<=WIDTH&&1<=y+j&&y+j<=HEIGHT)))
 				drawAt(x + i, y + j, (erase ? noChar : shapeChar));
 }
 
@@ -146,12 +138,7 @@ void printBoard()
 {
 	for (int x = 1; x <= WIDTH; x++)
 		for (int y = 1; y <= HEIGHT; y++)
-		{
-			if (board[y][x])
-				drawAt(x, y, shapeChar);
-			else
-				drawAt(x, y, noChar);
-		}
+			drawAt(x, y, (board[y][x] ? shapeChar : noChar));
 }
 
 void elimLines()
@@ -161,28 +148,27 @@ void elimLines()
 	{
 		bool full = true;
 		for (int i = 1; i <= WIDTH; i++)
-			if (!board[row][i])
+			if (!board[row][i]){
 				full = false;
-		if (full)
-			fullLines.push_back(row);
+				break;
+			}
+		if (full) fullLines.push_back(row);
 	}
 	int nLines = fullLines.size();
 	lineCnt += nLines;
 	score += scoreTable[nLines];
 	for (int i = 1; i <= WIDTH / 2; i++)
 	{
-		for (int rowi = 0; rowi < nLines; rowi++)
+		for (int iR = 0; iR < nLines; iR++)
 		{
-			int y = fullLines[rowi];
-			drawAt(WIDTH / 2 - i + 1, y, noChar);
-			drawAt(WIDTH / 2 + i, y, noChar);
+			drawAt(WIDTH / 2 - i + 1, fullLines[iR], noChar);
+			drawAt(WIDTH / 2 + i,     fullLines[iR], noChar);
 		}
 		Sleep(70);
 	}
-	for (int rowi = 0; rowi < nLines; rowi++)
+	for (int iR = 0; iR < nLines; iR++)
 	{
-		int row = fullLines[rowi];
-		for (int i = row; i >= 1; i--)
+		for (int i = fullLines[iR]; i >= 1; i--)
 			for (int j = 1; j <= WIDTH; j++)
 				board[i][j] = board[i - 1][j];
 	}
@@ -199,17 +185,12 @@ void init()
 	score = 0;
 }
 
-int spawnx(int no)
-{
-	return WIDTH / 2 - (size[no] + 1) / 2 + 1;
-}
-
 void spawn()
 {
 	tNo = tNextNo;
 	tNextNo = rand() % 7;
 	copyShape(shape[tNo], tShape);
-	tx = spawnx(tNo);
+	tx = WIDTH / 2 - (size[tNo] + 1) / 2 + 1;
 	ty = -1;
 }
 
@@ -256,8 +237,8 @@ void info()
 	cout << "SCORE: " << score   << "              " << endl;
 	gotoxy(WIDTH + 4, 6);
 	cout << "NEXT:" << endl;
-	drawNextShape(WIDTH + 6, 8, emptyShape, true);
-	drawNextShape(WIDTH + 6, 8, shape[tNextNo]);
+	drawShape(WIDTH + 6, 8, emptyShape    , true , false);
+	drawShape(WIDTH + 6, 8, shape[tNextNo], false, false);
 }
 
 bool keyPress(int key)
