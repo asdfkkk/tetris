@@ -226,7 +226,7 @@ int findMinHeight(int no){
 int findHardShape(){
 	int h = 0, tno;
 	for(int no = 0; no < 7; no++){
-		if (findMinHeight(no) > h){
+		if (findMinHeight(no) >= h){
 			h = findMinHeight(no);
 			tno = no;
 		}
