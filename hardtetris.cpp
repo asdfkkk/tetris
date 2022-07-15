@@ -343,7 +343,7 @@ int main()
 		game();
 		gotoxy(0, HEIGHT + 2);
 		cout << "GAME OVER" << endl;
-		cout << "SCORE" << score << endl;
+		cout << "SCORE: " << score << endl;
 		cout << "PRESS R TO RESTART" << endl;
 		while (true)
 			if (kbhit() && getch() == 'r')
