@@ -102,6 +102,14 @@ void drawShape(int x, int y, const int sh[4][4], bool erase = false)
 {
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++)
+			if (sh[j][i]&&1<=x+i&&x+i<=WIDTH&&1<=y+j&&y+j<=HEIGHT)
+				drawAt(x + i, y + j, (erase ? noChar : shapeChar));
+}
+
+void drawNextShape(int x, int y, const int sh[4][4], bool erase = false)
+{
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
 			if (sh[j][i])
 				drawAt(x + i, y + j, (erase ? noChar : shapeChar));
 }
@@ -117,7 +125,7 @@ int spawnx(int no)
 
 int spawny(int no)
 {
-	return (lvl >= 5 ? 2 : 1);
+	return -1;
 }
 
 bool valid(int x, int y, int sh[4][4])
@@ -252,15 +260,15 @@ void info()
 	gotoxy(WIDTH + 4, 3);
 	cout << "PRESS P TO PAUSE" << endl;
 	gotoxy(WIDTH + 4, 4);
-	cout << "NUMBER OF ROWS ELIMINATED£º" << lineCnt << "              " << endl;
+	cout << "NUMBER OF ROWS ELIMINATED: " << lineCnt << "              " << endl;
 	gotoxy(WIDTH + 4, 5);
-	cout << "DIFFICULTY£º" << lvl     << "              " << endl;
+	cout << "DIFFICULTY: " << lvl     << "              " << endl;
 	gotoxy(WIDTH + 4, 6);
-	cout << "SCORE£º" << score   << "              " << endl;
+	cout << "SCORE: " << score   << "              " << endl;
 	gotoxy(WIDTH + 4, 7);
 	cout << "NEXT:" << endl;
-	drawShape(WIDTH + 6, 9, emptyShape, true);
-	drawShape(WIDTH + 6, 9, shape[tNextNo]);
+	drawNextShape(WIDTH + 6, 9, emptyShape, true);
+	drawNextShape(WIDTH + 6, 9, shape[tNextNo]);
 }
 
 void pause()
