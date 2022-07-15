@@ -115,7 +115,7 @@ void drawNextShape(int x, int y, const int sh[4][4], bool erase = false)
 }
 
 bool board[HEIGHT + 5][WIDTH + 5];
-int tx, ty, tNo, tNextNo, tShape[4][4], score, lvl, lineCnt;
+int tx, ty, tNo, tNextNo, tShape[4][4], score, lineCnt;
 const int scoreTable[5] = {0, 40, 300, 1200, 3000};
 
 int spawnx(int no)
@@ -178,8 +178,7 @@ void elimLines()
 	}
 	int nLines = fullLines.size();
 	lineCnt += nLines;
-	lvl = lineCnt / 10 + 1;
-	score += scoreTable[nLines] * lvl;
+	score += scoreTable[nLines];
 	for (int i = 1; i <= WIDTH / 2; i++)
 	{
 		for (int rowi = 0; rowi < nLines; rowi++)
@@ -207,7 +206,6 @@ void init()
 	printBoard();
 	srand(time(0));
 	tNextNo = rand() % 7;
-	lvl = 1;
 	score=0;
 }
 
@@ -262,13 +260,11 @@ void info()
 	gotoxy(WIDTH + 4, 4);
 	cout << "NUMBER OF ROWS ELIMINATED: " << lineCnt << "              " << endl;
 	gotoxy(WIDTH + 4, 5);
-	cout << "DIFFICULTY: " << lvl     << "              " << endl;
-	gotoxy(WIDTH + 4, 6);
 	cout << "SCORE: " << score   << "              " << endl;
-	gotoxy(WIDTH + 4, 7);
+	gotoxy(WIDTH + 4, 6);
 	cout << "NEXT:" << endl;
-	drawNextShape(WIDTH + 6, 9, emptyShape, true);
-	drawNextShape(WIDTH + 6, 9, shape[tNextNo]);
+	drawNextShape(WIDTH + 6, 8, emptyShape, true);
+	drawNextShape(WIDTH + 6, 8, shape[tNextNo]);
 }
 
 void pause()
@@ -317,9 +313,7 @@ void game()
 					right();
 			}
 		}
-		int timing=max(500/lvl,50);
-		if(downKey)timing=min(timing,70);
-		if (clock() - downClock >= timing)
+		if (downKey&&clock() - downClock >= 70)
 		{
 			if (!valid(tx, ty + 1, tShape))
 			{
