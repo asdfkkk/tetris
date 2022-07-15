@@ -192,26 +192,26 @@ int findMinHeight(int no){
 	int sh[4][4];
 	copyShape(shape[no], sh);
 	int h = HEIGHT + 10;
-	for (int i = 1; i <= 4; i++){		
+	for (int i = 1; i <= 4; i++){
 		for (int x = 1; x <= WIDTH; x++){
-			if (!valid(x, -5, sh[no]))break;
+			if (!valid(x, -5, sh))break;
 			int y = -1;
 			for (; ; y++){
-				if (!valid(x, y, sh[no]))break;
+				if (!valid(x, y, sh))break;
 			}
 			y--;
-			toBoard(x, y, sh[no]);
+			toBoard(x, y, sh);
 			int row = 1;
 			for (; ; row++)
 			{
-				bool full = true;
+				bool empty = true;
 				for (int i = 1; i <= WIDTH; i++)
-					if (!board[row][i]){
-						full = false;
+					if (board[row][i]){
+						empty = false;
 						break;
 					}
-				if (full) break;
-			} 
+				if (!empty) break;
+			}
 			h = min(h, HEIGHT - row + 1);
 			for (int x = 1; x <= WIDTH; x++)
 				for (int y = 1; y <= HEIGHT; y++)
@@ -269,11 +269,11 @@ void rotate()
 void info()
 {
 	gotoxy(WIDTH + 4, 4);
-	cout << "NUMBER OF ROWS ELIMINATED: " << lineCnt << "              " << endl;
+	cout << "NUMBER OF ROWS ELIMINATED: " << lineCnt << "              ";
 	gotoxy(WIDTH + 4, 5);
-	cout << "SCORE: " << score   << "              " << endl;
+	cout << "SCORE: " << score   << "              ";
 	gotoxy(WIDTH + 4, 6);
-	cout << "NEXT:" << endl;
+	cout << "NEXT:";
 	drawShape(WIDTH + 6, 8, emptyShape    , true , false);
 	drawShape(WIDTH + 6, 8, shape[tNextNo], false, false);
 }
