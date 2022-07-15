@@ -268,18 +268,14 @@ bool keyPress(int key)
 
 void game()
 {
-	int downClock;
-	bool downKey;
 	init();
 	spawn();
 	drawShape(tx, ty, tShape);
 	info();
-	downClock = clock();
+	int downClock = clock();
 	while (true)
 	{
-		downKey = false;
 		gotoxy(0, HEIGHT + 2);
-		if (keyPress(VK_DOWN)) downKey = true;
 		if (kbhit() && getch() == 224)
 		{
 			switch(getch()){
@@ -288,7 +284,7 @@ void game()
 				case 77: right();  break;
 			}
 		}
-		if (downKey && clock() - downClock >= 70)
+		if (keyPress(VK_DOWN) && clock() - downClock >= 70)
 		{
 			if (!valid(tx, ty + 1, tShape))
 			{
