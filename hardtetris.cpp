@@ -106,7 +106,7 @@ void drawShape(int x, int y, const int sh[4][4], bool erase = false, bool bound 
 				drawAt(x + i, y + j, (erase ? noChar : shapeChar));
 }
 
-bool board[HEIGHT + 5][WIDTH + 5];
+bool board[HEIGHT + 5][WIDTH + 5], temp[HEIGHT + 5][WIDTH + 5];
 int tx, ty, tNo, tNextNo, tShape[4][4], score, lineCnt;
 const int scoreTable[5] = {0, 40, 300, 1200, 3000};
 
@@ -183,6 +183,43 @@ void init()
 	srand(time(0));
 	tNextNo = rand() % 7;
 	score = 0;
+}
+
+int findMinHeight(int no){
+	for (int x = 1; x <= WIDTH; x++)
+		for (int y = 1; y <= HEIGHT; y++)
+			temp[y][x] = board[y][x];
+	int sh[4][4];
+	copyShape(shape[no], sh);
+	int h = HEIGHT + 10;
+	for (int i = 1; i <= 4; i++){		
+		for (int x = 1; x <= WIDTH; x++){
+			if (!valid(x, -5, sh[no]))break;
+			int y = -1;
+			for (; ; y++){
+				if (!valid(x, y, sh[no]))break;
+			}
+			y--;
+			toBoard(x, y, sh[no]);
+			int row = 1;
+			for (; ; row++)
+			{
+				bool full = true;
+				for (int i = 1; i <= WIDTH; i++)
+					if (!board[row][i]){
+						full = false;
+						break;
+					}
+				if (full) break;
+			} 
+			h = min(h, HEIGHT - row + 1);
+			for (int x = 1; x <= WIDTH; x++)
+				for (int y = 1; y <= HEIGHT; y++)
+					board[y][x] = temp[y][x];
+		}
+		rotateShape(sh,no);
+	}
+	return h;
 }
 
 void spawn()
