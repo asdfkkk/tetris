@@ -118,17 +118,7 @@ bool board[HEIGHT + 5][WIDTH + 5];
 int tx, ty, tNo, tNextNo, tShape[4][4], score, lineCnt;
 const int scoreTable[5] = {0, 40, 300, 1200, 3000};
 
-int spawnx(int no)
-{
-	return WIDTH / 2 - (size[no] + 1) / 2 + 1;
-}
-
-int spawny(int no)
-{
-	return -1;
-}
-
-bool valid(int x, int y, int sh[4][4])
+bool valid(int x, int y, const int sh[4][4])
 {
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++)
@@ -144,7 +134,7 @@ bool valid(int x, int y, int sh[4][4])
 	return true;
 }
 
-void toBoard(int x, int y, int sh[4][4])
+void toBoard(int x, int y, const int sh[4][4])
 {
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++)
@@ -206,7 +196,12 @@ void init()
 	printBoard();
 	srand(time(0));
 	tNextNo = rand() % 7;
-	score=0;
+	score = 0;
+}
+
+int spawnx(int no)
+{
+	return WIDTH / 2 - (size[no] + 1) / 2 + 1;
 }
 
 void spawn()
@@ -215,7 +210,7 @@ void spawn()
 	tNextNo = rand() % 7;
 	copyShape(shape[tNo], tShape);
 	tx = spawnx(tNo);
-	ty = spawny(tNo);
+	ty = -1;
 }
 
 void left()
@@ -255,8 +250,6 @@ void rotate()
 
 void info()
 {
-	gotoxy(WIDTH + 4, 3);
-	cout << "PRESS P TO PAUSE" << endl;
 	gotoxy(WIDTH + 4, 4);
 	cout << "NUMBER OF ROWS ELIMINATED: " << lineCnt << "              " << endl;
 	gotoxy(WIDTH + 4, 5);
@@ -265,15 +258,6 @@ void info()
 	cout << "NEXT:" << endl;
 	drawNextShape(WIDTH + 6, 8, emptyShape, true);
 	drawNextShape(WIDTH + 6, 8, shape[tNextNo]);
-}
-
-void pause()
-{
-	gotoxy(WIDTH+4,3);
-	cout << "PRESS P TO CONTINUE" << endl;
-	while (true)
-		if (kbhit() && getch() == 'p')
-			break;
 }
 
 bool keyPress(int key)
@@ -295,25 +279,16 @@ void game()
 	{
 		downKey = false;
 		gotoxy(0, HEIGHT + 2);
-		if (keyPress(VK_DOWN))
-			downKey = true;
-		if (kbhit())
+		if (keyPress(VK_DOWN)) downKey = true;
+		if (kbhit() && getch() == 224)
 		{
-			int k = getch();
-			if (k == 'p')
-				pause();
-			else if (k == 224)
-			{
-				int k = getch();
-				if (k == 72)
-					rotate();
-				else if (k == 75)
-					left();
-				else if (k == 77)
-					right();
+			switch(getch()){
+				case 72: rotate(); break;
+				case 75: left();   break;
+				case 77: right();  break;
 			}
 		}
-		if (downKey&&clock() - downClock >= 70)
+		if (downKey && clock() - downClock >= 70)
 		{
 			if (!valid(tx, ty + 1, tShape))
 			{
@@ -339,7 +314,6 @@ void game()
 int main()
 {
 	consoleInit();
-	system("pause");
 	while (1)
 	{
 		game();
