@@ -117,7 +117,6 @@ void drawTetrion()
 		gotoxy(WIDTH+1, y);
 		cout << "  ";
 	}
-	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 }
 
 void drawShape(int x, int y, const int sh[4][4], bool erase = false)
@@ -141,7 +140,6 @@ void drawShape(int x, int y, const int sh[4][4], bool erase = false)
 			}
 		}
 	}
-	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 }
 
 bool board[HEIGHT+9][WIDTH+9], temp[HEIGHT+9][WIDTH+9];
@@ -194,7 +192,6 @@ void printBoard()
 			cout << "  ";
 		}
 	}
-	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 }
 
 void elimLines(bool anim = true)
@@ -224,8 +221,11 @@ void elimLines(bool anim = true)
 		{
 			for (int iR = 0; iR < nLines; iR++)
 			{
-				drawAt(WIDTH/2-i+1, fullLines[iR], noChar);
-				drawAt(WIDTH/2+i,   fullLines[iR], noChar);
+				SetConsoleTextAttribute(hConsole, 0);
+				gotoxy(WIDTH/2-i+1, fullLines[iR]);
+				cout << "  ";
+				gotoxy(WIDTH/2+i,   fullLines[iR]);
+				cout << "  ";
 			}
 			Sleep(70);
 		}
@@ -362,6 +362,7 @@ void rotate()
 
 void info()
 {
+	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 	gotoxy(WIDTH + 4, 4);
 	cout << "NUMBER OF ROWS ELIMINATED: " << lineCnt << "              ";
 	gotoxy(WIDTH + 4, 5);
@@ -394,6 +395,7 @@ void game()
 			if (!valid(tx, ty + 1, tShape))
 			{
 				toBoard(tx, ty, tShape);
+				printBoard();
 				elimLines();
 				info();
 				spawn();
