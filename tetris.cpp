@@ -112,12 +112,21 @@ void drawTetrion()
 		drawAt(WIDTH + 1, y, tetrionChar);
 }
 
-void drawShape(int x, int y, const int sh[4][4], bool erase = false)
+void drawAtColored(int x, int y, int color)
+{
+	SetConsoleTextAttribute(hConsole, color);
+	gotoxy(x, y);
+	cout << "  ";
+	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
+}
+
+
+void drawShape(int x, int y, const int sh[4][4], bool erase = false, int color=BACKGROUND_BLUE)
 {
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++)
 			if (sh[j][i])
-				drawAt(x + i, y + j, (erase ? noChar : shapeChar));
+				drawAtColored(x + i, y + j, (erase ? 0 : color));
 }
 
 bool board[HEIGHT + 5][WIDTH + 5];
@@ -232,7 +241,7 @@ void left()
 	{
 		drawShape(tx, ty, tShape, true);
 		tx--;
-		drawShape(tx, ty, tShape);
+		drawShape(tx, ty, tShape, 0, BACKGROUND_RED);
 	}
 }
 
@@ -242,7 +251,7 @@ void right()
 	{
 		drawShape(tx, ty, tShape, true);
 		tx++;
-		drawShape(tx, ty, tShape);
+		drawShape(tx, ty, tShape, 0, BACKGROUND_RED);
 	}
 }
 
@@ -258,7 +267,7 @@ void rotate()
 		tx++;
 	else
 		rotateShape(tShape, tNo, 3);
-	drawShape(tx, ty, tShape);
+	drawShape(tx, ty, tShape, 0, BACKGROUND_RED);
 }
 
 void info()
@@ -274,7 +283,7 @@ void info()
 	gotoxy(WIDTH + 4, 7);
 	cout << "NEXT: " << endl;
 	drawShape(WIDTH + 6, 9, emptyShape, true);
-	drawShape(WIDTH + 6, 9, shape[tNextNo]);
+	drawShape(WIDTH + 6, 9, shape[tNextNo], 0, BACKGROUND_GREEN);
 }
 
 void pause()
@@ -300,7 +309,7 @@ void game()
 	bool downKey;
 	init();
 	spawn();
-	drawShape(tx, ty, tShape);
+	drawShape(tx, ty, tShape, 0, BACKGROUND_RED);
 	info();
 	downClock = clock();
 	while (true)
@@ -328,26 +337,27 @@ void game()
 					right();
 			}
 		}
-		int timing=max(500/lvl,50);
-		if(downKey)timing=min(timing,70);
+		int timing = max(500/lvl, 50);
+		if (downKey) timing = min(timing, 70);
 		if (clock() - downClock >= timing)
 		{
 			if (!valid(tx, ty + 1, tShape))
 			{
 				toBoard(tx, ty, tShape);
+				printBoard();
 				elimLines();
 				info();
 				spawn();
 				if (!valid(tx, ty, tShape))
 					break;
 				info();
-				drawShape(tx, ty, tShape);
+				drawShape(tx, ty, tShape, 0, BACKGROUND_RED);
 				downClock = clock();
 				continue;
 			}
 			drawShape(tx, ty, tShape, 1);
 			ty++;
-			drawShape(tx, ty, tShape);
+			drawShape(tx, ty, tShape, 0, BACKGROUND_RED);
 			downClock = clock();
 		}
 	}
@@ -356,7 +366,13 @@ void game()
 int main()
 {
 	consoleInit();
-	system("pause");
+	cout << "press any key to start";
+	while (true)
+		if (kbhit())
+		{
+			getch();
+			break;
+		}
 	while (1)
 	{
 		game();
