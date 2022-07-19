@@ -63,7 +63,7 @@ const int shape[7][4][4] =
 		{{0, 0, 0, 0},
 		 {1, 1, 0, 0},
 		 {0, 1, 1, 0},
-		 {0, 0, 0, 0}}
+		 {0, 0, 0, 0}},
 		// T
 		{{0, 0, 0, 0},
 		 {0, 1, 1, 1},
@@ -99,14 +99,28 @@ void rotateShape(int a[4][4], int n = 1)
 
 void drawTetrion()
 {
+	SetConsoleTextAttribute(hConsole, BACKGROUND_BLUE|BACKGROUND_GREEN|BACKGROUND_RED);
 	for (int x = 0; x <= WIDTH + 1; x++)
-		drawAt(x, 0, tetrionChar);
+	{
+		gotoxy(x, 0);
+		cout << "  ";
+	}
 	for (int x = 0; x <= WIDTH + 1; x++)
-		drawAt(x, HEIGHT + 1, tetrionChar);
+	{
+		gotoxy(x, HEIGHT+1);
+		cout << "  ";
+	}
 	for (int y = 1; y <= HEIGHT + 1; y++)
-		drawAt(0, y, tetrionChar);
+	{
+		gotoxy(0, y);
+		cout << "  ";
+	}
 	for (int y = 1; y <= HEIGHT + 1; y++)
-		drawAt(WIDTH + 1, y, tetrionChar);
+	{
+		gotoxy(WIDTH+1, y);
+		cout << "  ";
+	}
+	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 }
 
 void drawShape(int x, int y, const int sh[4][4], bool erase = false)
