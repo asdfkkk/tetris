@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <vector>
 #include <conio.h>
+#include <algorithm>
 using namespace std;
 
 HANDLE hConsole;
@@ -80,6 +81,13 @@ int getShapeNo(char c)
 		case 'Z': return 5;
 		case 'T': return 6;
 	}
+}
+
+char ctable[] = {'I', 'J', 'L', 'O', 'S', 'Z', 'T'};
+
+char getShapeChar(int no)
+{
+	return ctable[no];
 }
 
 void copyShape(const int a[4][4], int b[4][4])
@@ -327,13 +335,22 @@ int findMinHeight(int no)
 
 int findHardShape()
 {
-	int h = 0, tno;
-	for(int no = 0; no < 7; no++)
+	vector<int> h;
+	for (int no = 0; no < 7; no++)
 	{
-		if (findMinHeight(no) >= h)
+		h.push_back(findMinHeight(no));
+	}
+	int mxh = *max_element(h.begin(), h.end());
+	int tno = 0;
+	for (int no = 0; no < 7; no++)
+	{
+		if (h[no] == mxh)
 		{
-			h = findMinHeight(no);
 			tno = no;
+			if (getShapeChar(no) == 'S' || getShapeChar(no) == 'Z')
+			{
+				return no;
+			}
 		}
 	}
 	return tno;
@@ -389,10 +406,7 @@ void info()
 {
 	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 	gotoxy(WIDTH+4, 4);
-	cout << "NUMBER OF ROWS ELIMINATED: " << lineCnt << "              ";
-	gotoxy(WIDTH+4, 5);
-	cout << findMinHeight(tNo) << "              ";
-	gotoxy(WIDTH+4, 6);
+	cout << "SCORE: " << lineCnt << "              ";
 }
 
 void game()
@@ -462,7 +476,7 @@ int main()
 		SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 		gotoxy(0, HEIGHT + 2);
 		cout << "GAME OVER" << endl;
-		cout << "NUMBER OF ROWS ELIMINATED: " << lineCnt << endl;
+		cout << "SCORE: " << lineCnt << endl;
 		cout << "PRESS R TO RESTART" << endl;
 		while (true)
 			if (kbhit() && getch() == 'r')
