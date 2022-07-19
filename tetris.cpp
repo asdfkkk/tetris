@@ -7,13 +7,15 @@
 #include <conio.h>
 using namespace std;
 
+HANDLE hConsole;
+
 void consoleInit()
 {
-	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO info;
 	info.dwSize = 100;
 	info.bVisible = FALSE;
-	SetConsoleCursorInfo(consoleHandle, &info);
+	SetConsoleCursorInfo(hConsole, &info);
 }
 
 void gotoxy(int x, int y)
@@ -21,15 +23,14 @@ void gotoxy(int x, int y)
 	COORD coord;
 	coord.X = x*2;
 	coord.Y = y;
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleCursorPosition(hConsole, coord);
 }
 
 const int WIDTH = 10;
 const int HEIGHT = 24;
-const string noChar = "  ";
-const string tetrionChar = "¨€";
-const string shapeChar = "¡õ";
+const string noChar = "1";
+const string tetrionChar = "2";
+const string shapeChar = "3";
 
 const int shape[7][4][4] =
 	{
@@ -62,7 +63,20 @@ const int size[7] = {4, 3, 3, 2, 3, 3, 3};
 void drawAt(int x, int y, string c)
 {
 	gotoxy(x, y);
-	cout << c;
+	if (c == "1")
+	{
+		SetConsoleTextAttribute(hConsole, 0);
+	}
+	else if (c == "2")
+	{
+		SetConsoleTextAttribute(hConsole, BACKGROUND_BLUE|BACKGROUND_GREEN|BACKGROUND_RED);
+	}
+	else
+	{
+		SetConsoleTextAttribute(hConsole, BACKGROUND_BLUE);
+	}
+	cout << "  ";
+	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 }
 
 void rotateShape(int a[4][4], int no, int n = 1)
