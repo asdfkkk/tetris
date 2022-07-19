@@ -152,6 +152,20 @@ void drawShape(int x, int y, const int sh[4][4], bool erase = false)
 bool board[HEIGHT+9][WIDTH+9], temp[HEIGHT+9][WIDTH+9];
 int tx, ty, tNo, tNextNo, tShape[4][4], lineCnt;
 
+void drawLimit()
+{
+	SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+	for (int x = 1; x <= WIDTH; x++)
+	{
+		if (board[4][x])
+		{
+			continue;
+		}
+		gotoxy(x, 4);
+		cout << "__";
+	}
+}
+
 bool valid(int x, int y, const int sh[4][4])
 {
 	for (int i = 0; i < 4; i++)
@@ -337,7 +351,8 @@ void left()
 {
 	if (valid(tx - 1, ty, tShape))
 	{
-		drawShape(tx, ty, tShape, true);
+		drawShape(tx, ty, tShape, 1);
+		drawLimit();
 		tx--;
 		drawShape(tx, ty, tShape);
 	}
@@ -347,7 +362,8 @@ void right()
 {
 	if (valid(tx + 1, ty, tShape))
 	{
-		drawShape(tx, ty, tShape, true);
+		drawShape(tx, ty, tShape, 1);
+		drawLimit();
 		tx++;
 		drawShape(tx, ty, tShape);
 	}
@@ -355,7 +371,7 @@ void right()
 
 void rotate()
 {
-	drawShape(tx, ty, tShape, true);
+	drawShape(tx, ty, tShape, 1);
 	rotateShape(tShape);
 	if (valid(tx, ty, tShape))
 		;
@@ -365,6 +381,7 @@ void rotate()
 		tx++;
 	else
 		rotateShape(tShape, 3);
+	drawLimit();
 	drawShape(tx, ty, tShape);
 }
 
@@ -381,6 +398,7 @@ void info()
 void game()
 {
 	init();
+	drawLimit();
 	spawn();
 	drawShape(tx, ty, tShape);
 	info();
@@ -398,24 +416,36 @@ void game()
 				case 80: down = true;
 			}
 		}
-		gotoxy(0, HEIGHT + 2);
 		if (down)
 		{
 			if (!valid(tx, ty + 1, tShape))
 			{
+				bool fail = false;
+				for (int i = 0; i < 4; i++)
+				{
+					for (int j = 0; j < 4; j++)
+					{
+						if (tShape[j][i] && ty+j<=4)
+						{
+							fail = true;
+						}
+					}
+				}
 				toBoard(tx, ty, tShape);
 				printBoard();
-				elimLines();
-				info();
-				spawn();
-				if (!valid(tx, ty, tShape))
+				drawLimit();
+				if (fail)
 				{
 					break;
 				}
+				elimLines();
+				drawLimit();
 				info();
+				spawn();
 				drawShape(tx, ty, tShape);
 				continue;
 			}
+			drawLimit();
 			drawShape(tx, ty, tShape, 1);
 			ty++;
 			drawShape(tx, ty, tShape);
