@@ -257,13 +257,14 @@ void init()
 	srand(time(0));
 }
 
-int findMinHeight(int no){
+int findMinHeight(int no)
+{
 	for (int x = 1; x <= WIDTH; x++)
 		for (int y = 1; y <= HEIGHT; y++)
 			temp[y][x] = board[y][x];
 	int sh[4][4];
 	copyShape(shape[no], sh);
-	int h = HEIGHT + 10;
+	int h = HEIGHT;
 	for (int i = 1; i <= 4; i++)
 	{
 		for (int x = 1; x <= WIDTH; x++)
@@ -321,7 +322,7 @@ int findHardShape()
 			tno = no;
 		}
 	}
-	return tno;
+	return getShapeNo('I');
 }
 
 void spawn()
@@ -329,7 +330,7 @@ void spawn()
 	tNo = findHardShape();
 	copyShape(shape[tNo], tShape);
 	tx = WIDTH/2-1;
-	ty = 0;
+	ty = 1;
 }
 
 void left()
