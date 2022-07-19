@@ -7,13 +7,15 @@
 #include <conio.h>
 using namespace std;
 
+HANDLE hConsole;
+
 void consoleInit()
 {
-	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO info;
 	info.dwSize = 100;
 	info.bVisible = FALSE;
-	SetConsoleCursorInfo(consoleHandle, &info);
+	SetConsoleCursorInfo(hConsole, &info);
 }
 
 void gotoxy(int x, int y)
@@ -21,7 +23,6 @@ void gotoxy(int x, int y)
 	COORD coord;
 	coord.X = x*2;
 	coord.Y = y;
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleCursorPosition(hConsole, coord);
 }
 
@@ -37,27 +38,31 @@ const int shape[7][4][4] =
 		 {1, 1, 1, 1},
 		 {0, 0, 0, 0},
 		 {0, 0, 0, 0}},
-		{{1, 0, 0},
-		 {1, 1, 1},
-		 {0, 0, 0}},
-		{{0, 0, 1},
-		 {1, 1, 1},
-		 {0, 0, 0}},
-		{{1, 1},
-		 {1, 1}},
-		{{0, 1, 1},
-		 {1, 1, 0},
-		 {0, 0, 0}},
-		{{0, 1, 0},
-		 {1, 1, 1},
-		 {0, 0, 0}},
-		{{1, 1, 0},
-		 {0, 1, 1},
-		 {0, 0, 0}}};
+		{{0, 0, 0, 0},
+		 {0, 1, 0, 0},
+		 {0, 1, 1, 1},
+		 {0, 0, 0, 0}},
+		{{0, 0, 0, 0},
+		 {0, 0, 1, 0},
+		 {1, 1, 1, 0},
+		 {0, 0, 0, 0}},
+		{{0, 0, 0, 0},
+		 {0, 1, 1, 0},
+		 {0, 1, 1, 0},
+		 {0, 0, 0, 0}},
+		{{0, 0, 0, 0},
+		 {0, 1, 1, 0},
+		 {1, 1, 0, 0},
+		 {0, 0, 0, 0}},
+		{{0, 0, 0, 0},
+		 {0, 1, 0, 0},
+		 {1, 1, 1, 0},
+		 {0, 0, 0, 0}},
+		{{0, 0, 0, 0},
+		 {1, 1, 0, 0},
+		 {0, 1, 1, 0},
+		 {0, 0, 0, 0}}};
 
-const int emptyShape[4][4] = {{1, 1, 1, 1}, {1, 1, 1, 1}, {1, 1, 1, 1}, {1, 1, 1, 1}};
-
-const int size[7] = {4, 3, 3, 2, 3, 3, 3};
 
 void drawAt(int x, int y, string c)
 {
@@ -65,25 +70,23 @@ void drawAt(int x, int y, string c)
 	cout << c;
 }
 
-void rotateShape(int a[4][4], int no, int n = 1)
-{
-	int b[4][4];
-	for (int i = 1; i <= n; i++)
-	{
-		for (int x = 0; x < size[no]; x++)
-			for (int y = 0; y < size[no]; y++)
-				b[x][size[no] - 1 - y] = a[y][x];
-		for (int x = 0; x < size[no]; x++)
-			for (int y = 0; y < size[no]; y++)
-				a[x][y] = b[x][y];
-	}
-}
-
 void copyShape(const int a[4][4], int b[4][4])
 {
 	for (int x = 0; x < 4; x++)
 		for (int y = 0; y < 4; y++)
 			b[y][x] = a[y][x];
+}
+
+void rotateShape(int a[4][4], int n = 1)
+{
+	int b[4][4];
+	for (int i = 1; i <= n; i++)
+	{
+		for (int x = 0; x < 4; x++)
+			for (int y = 0; y < 4; y++)
+				b[x][3-y] = a[y][x];
+		copyShape(b, a);
+	}
 }
 
 void drawTetrion()
@@ -98,22 +101,23 @@ void drawTetrion()
 		drawAt(WIDTH + 1, y, tetrionChar);
 }
 
-void drawShape(int x, int y, const int sh[4][4], bool erase = false, bool bound = true)
+void drawShape(int x, int y, const int sh[4][4], bool erase = false)
 {
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++)
-			if (sh[j][i]&&(!bound||(1<=x+i&&x+i<=WIDTH&&1<=y+j&&y+j<=HEIGHT)))
+			if (sh[j][i] && (1<=x+i&&x+i<=WIDTH&&1<=y+j&&y+j<=HEIGHT))
 				drawAt(x + i, y + j, (erase ? noChar : shapeChar));
 }
 
-bool board[HEIGHT + 5][WIDTH + 5], temp[HEIGHT + 5][WIDTH + 5];
-int tx, ty, tNo, tNextNo, tShape[4][4], score, lineCnt;
-const int scoreTable[5] = {0, 40, 300, 1200, 3000};
+bool board[HEIGHT+9][WIDTH+9], temp[HEIGHT+9][WIDTH+9];
+int tx, ty, tNo, tNextNo, tShape[4][4], lineCnt;
 
 bool valid(int x, int y, const int sh[4][4])
 {
 	for (int i = 0; i < 4; i++)
+	{
 		for (int j = 0; j < 4; j++)
+		{
 			if (sh[j][i])
 			{
 				if (y + j > HEIGHT)
@@ -123,6 +127,8 @@ bool valid(int x, int y, const int sh[4][4])
 				if (board[y + j][x + i])
 					return false;
 			}
+		}
+	}
 	return true;
 }
 
@@ -131,7 +137,7 @@ void toBoard(int x, int y, const int sh[4][4])
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++)
 			if (sh[j][i])
-				board[y + j][x + i] = true;
+				board[y+j][x+i] = true;
 }
 
 void printBoard()
@@ -148,22 +154,28 @@ void elimLines(bool anim = true)
 	{
 		bool full = true;
 		for (int i = 1; i <= WIDTH; i++)
-			if (!board[row][i]){
+		{
+			if (!board[row][i])
+			{
 				full = false;
 				break;
 			}
-		if (full) fullLines.push_back(row);
+		}
+		if (full)
+		{
+			fullLines.push_back(row);
+		}
 	}
 	int nLines = fullLines.size();
-	if(anim){
+	if (anim)
+	{
 		lineCnt += nLines;
-		score += scoreTable[nLines];
 		for (int i = 1; i <= WIDTH / 2; i++)
 		{
 			for (int iR = 0; iR < nLines; iR++)
 			{
-				drawAt(WIDTH / 2 - i + 1, fullLines[iR], noChar);
-				drawAt(WIDTH / 2 + i,     fullLines[iR], noChar);
+				drawAt(WIDTH/2-i+1, fullLines[iR], noChar);
+				drawAt(WIDTH/2+i,   fullLines[iR], noChar);
 			}
 			Sleep(70);
 		}
@@ -174,7 +186,10 @@ void elimLines(bool anim = true)
 			for (int j = 1; j <= WIDTH; j++)
 				board[i][j] = board[i - 1][j];
 	}
-	if(anim)printBoard();
+	if (anim)
+	{
+		printBoard();
+	}
 }
 
 void init()
@@ -183,7 +198,6 @@ void init()
 	drawTetrion();
 	printBoard();
 	srand(time(0));
-	score = 0;
 }
 
 int findMinHeight(int no){
@@ -193,12 +207,21 @@ int findMinHeight(int no){
 	int sh[4][4];
 	copyShape(shape[no], sh);
 	int h = HEIGHT + 10;
-	for (int i = 1; i <= 4; i++){
-		for (int x = 1; x <= WIDTH; x++){
-			if (!valid(x, -5, sh))break;
+	for (int i = 1; i <= 4; i++)
+	{
+		for (int x = 1; x <= WIDTH; x++)
+		{
+			if (!valid(x, -5, sh))
+			{
+				break;
+			}
 			int y = -1;
-			for (; ; y++){
-				if (!valid(x, y, sh))break;
+			for (; ; y++)
+			{
+				if (!valid(x, y, sh))
+				{
+					break;
+				}
 			}
 			y--;
 			toBoard(x, y, sh);
@@ -208,26 +231,35 @@ int findMinHeight(int no){
 			{
 				bool empty = true;
 				for (int i = 1; i <= WIDTH; i++)
-					if (board[row][i]){
+				{
+					if (board[row][i])
+					{
 						empty = false;
 						break;
 					}
-				if (!empty) break;
+				}
+				if (!empty)
+				{
+					break;
+				}
 			}
 			h = min(h, HEIGHT - row + 1);
 			for (int x = 1; x <= WIDTH; x++)
 				for (int y = 1; y <= HEIGHT; y++)
 					board[y][x] = temp[y][x];
 		}
-		rotateShape(sh,no);
+		rotateShape(sh);
 	}
 	return h;
 }
 
-int findHardShape(){
+int findHardShape()
+{
 	int h = 0, tno;
-	for(int no = 0; no < 7; no++){
-		if (findMinHeight(no) >= h){
+	for(int no = 0; no < 7; no++)
+	{
+		if (findMinHeight(no) >= h)
+		{
 			h = findMinHeight(no);
 			tno = no;
 		}
@@ -239,7 +271,7 @@ void spawn()
 {
 	tNo = findHardShape();
 	copyShape(shape[tNo], tShape);
-	tx = WIDTH / 2 - (size[tNo] + 1) / 2 + 1;
+	tx = WIDTH / 2 - 1;
 	ty = -1;
 }
 
@@ -266,7 +298,7 @@ void right()
 void rotate()
 {
 	drawShape(tx, ty, tShape, true);
-	rotateShape(tShape, tNo);
+	rotateShape(tShape);
 	if (valid(tx, ty, tShape))
 		;
 	else if (valid(tx - 1, ty, tShape))
@@ -274,7 +306,7 @@ void rotate()
 	else if (valid(tx + 1, ty, tShape))
 		tx++;
 	else
-		rotateShape(tShape, tNo, 3);
+		rotateShape(tShape, 3);
 	drawShape(tx, ty, tShape);
 }
 
@@ -283,14 +315,7 @@ void info()
 	gotoxy(WIDTH + 4, 4);
 	cout << "NUMBER OF ROWS ELIMINATED: " << lineCnt << "              ";
 	gotoxy(WIDTH + 4, 5);
-	cout << "SCORE: " << score   << "              ";
 	gotoxy(WIDTH + 4, 6);
-}
-
-bool keyPress(int key)
-{
-	SHORT state = GetAsyncKeyState(key);
-	return (1 << 15) & state;
 }
 
 void game()
@@ -299,19 +324,22 @@ void game()
 	spawn();
 	drawShape(tx, ty, tShape);
 	info();
-	int downClock = clock();
-	while (true)
+	bool down;
+	while (1)
 	{
-		gotoxy(0, HEIGHT + 2);
+		down = false;
 		if (kbhit() && getch() == 224)
 		{
-			switch(getch()){
+			switch (getch())
+			{
 				case 72: rotate(); break;
 				case 75: left();   break;
 				case 77: right();  break;
+				case 80: down = true;
 			}
 		}
-		if (keyPress(VK_DOWN) && clock() - downClock >= 70)
+		gotoxy(0, HEIGHT + 2);
+		if (down)
 		{
 			if (!valid(tx, ty + 1, tShape))
 			{
@@ -323,13 +351,11 @@ void game()
 					break;
 				info();
 				drawShape(tx, ty, tShape);
-				downClock = clock();
 				continue;
 			}
 			drawShape(tx, ty, tShape, 1);
 			ty++;
 			drawShape(tx, ty, tShape);
-			downClock = clock();
 		}
 	}
 }
@@ -342,7 +368,7 @@ int main()
 		game();
 		gotoxy(0, HEIGHT + 2);
 		cout << "GAME OVER" << endl;
-		cout << "SCORE: " << score << endl;
+		cout << "NUMBER OF ROWS ELIMINATED: " << lineCnt << endl;
 		cout << "PRESS R TO RESTART" << endl;
 		while (true)
 			if (kbhit() && getch() == 'r')
