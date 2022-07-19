@@ -27,7 +27,7 @@ void gotoxy(int x, int y)
 }
 
 const int WIDTH = 10;
-const int HEIGHT = 24;
+const int HEIGHT = 20;
 
 const int shape[7][4][4] =
 	{
@@ -67,12 +67,19 @@ const int shape[7][4][4] =
 		 {0, 0, 1, 0},
 		 {0, 0, 0, 0}},
 	};
-
-
-void drawAt(int x, int y, string c)
+	
+int getShapeNo(char c)
 {
-	gotoxy(x, y);
-	cout << c;
+	switch (c)
+	{
+		case 'I': return 0;
+		case 'J': return 1;
+		case 'L': return 2;
+		case 'O': return 3;
+		case 'S': return 4;
+		case 'Z': return 5;
+		case 'T': return 6;
+	}
 }
 
 void copyShape(const int a[4][4], int b[4][4])
@@ -322,7 +329,7 @@ void spawn()
 	tNo = findHardShape();
 	copyShape(shape[tNo], tShape);
 	tx = WIDTH/2-1;
-	ty = -2;
+	ty = 0;
 }
 
 void left()
@@ -363,10 +370,11 @@ void rotate()
 void info()
 {
 	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
-	gotoxy(WIDTH + 4, 4);
+	gotoxy(WIDTH+4, 4);
 	cout << "NUMBER OF ROWS ELIMINATED: " << lineCnt << "              ";
-	gotoxy(WIDTH + 4, 5);
-	gotoxy(WIDTH + 4, 6);
+	gotoxy(WIDTH+4, 5);
+	cout << findMinHeight(tNo) << "              ";
+	gotoxy(WIDTH+4, 6);
 }
 
 void game()
@@ -400,7 +408,9 @@ void game()
 				info();
 				spawn();
 				if (!valid(tx, ty, tShape))
+				{
 					break;
+				}
 				info();
 				drawShape(tx, ty, tShape);
 				continue;
