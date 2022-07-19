@@ -250,15 +250,15 @@ void rotate()
 void info()
 {
 	gotoxy(WIDTH + 4, 3);
-	cout << "按p暂停" << endl;
+	cout << "PRESS P TO PAUSE" << endl;
 	gotoxy(WIDTH + 4, 4);
-	cout << "行数：" << lineCnt << "              " << endl;
+	cout << "NUMBER OF ROWS ELIMINATED: " << lineCnt << "              " << endl;
 	gotoxy(WIDTH + 4, 5);
-	cout << "难度：" << lvl     << "              " << endl;
+	cout << "DIFFICULTY: " << lvl     << "              " << endl;
 	gotoxy(WIDTH + 4, 6);
-	cout << "分数：" << score   << "              " << endl;
+	cout << "SCORE: " << score   << "              " << endl;
 	gotoxy(WIDTH + 4, 7);
-	cout << "下一个：" << endl;
+	cout << "NEXT: " << endl;
 	drawShape(WIDTH + 6, 9, emptyShape, true);
 	drawShape(WIDTH + 6, 9, shape[tNextNo]);
 }
@@ -266,10 +266,12 @@ void info()
 void pause()
 {
 	gotoxy(WIDTH+4,3);
-	cout << "按p继续" << endl;
+	cout << "PRESS P TO CONTINUE" << endl;
 	while (true)
 		if (kbhit() && getch() == 'p')
 			break;
+	gotoxy(WIDTH + 4, 3);
+	cout << "PRESS P TO PAUSE      " << endl;
 }
 
 bool keyPress(int key)
@@ -345,9 +347,9 @@ int main()
 	{
 		game();
 		gotoxy(0, HEIGHT + 2);
-		cout << "游戏结束" << endl;
-		cout << "你的分数：" << score << endl;
-		cout << "按r开始新游戏" << endl;
+		cout << "GAME OVER" << endl;
+		cout << "SCORE: " << score << endl;
+		cout << "PRESS R TO RESTART" << endl;
 		while (true)
 			if (kbhit() && getch() == 'r')
 				break;
