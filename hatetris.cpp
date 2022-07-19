@@ -281,13 +281,13 @@ int findMinHeight(int no)
 	int h = HEIGHT;
 	for (int i = 1; i <= 4; i++)
 	{
-		for (int x = 1; x <= WIDTH; x++)
+		for (int x = -4; x <= WIDTH; x++)
 		{
-			if (!valid(x, -5, sh))
+			if (!valid(x, 1, sh))
 			{
-				break;
+				continue;
 			}
-			int y = -1;
+			int y = 1;
 			for (; ; y++)
 			{
 				if (!valid(x, y, sh))
@@ -336,7 +336,7 @@ int findHardShape()
 			tno = no;
 		}
 	}
-	return getShapeNo('I');
+	return tno;
 }
 
 void spawn()
