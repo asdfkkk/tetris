@@ -28,9 +28,6 @@ void gotoxy(int x, int y)
 
 const int WIDTH = 10;
 const int HEIGHT = 24;
-const string noChar = "  ";
-const string tetrionChar = "¨€";
-const string shapeChar = "¡õ";
 
 const int shape[7][4][4] =
 	{
@@ -125,10 +122,26 @@ void drawTetrion()
 
 void drawShape(int x, int y, const int sh[4][4], bool erase = false)
 {
+	if (erase)
+	{
+		SetConsoleTextAttribute(hConsole, 0);
+	}
+	else
+	{
+		SetConsoleTextAttribute(hConsole, BACKGROUND_RED);
+	}
 	for (int i = 0; i < 4; i++)
+	{
 		for (int j = 0; j < 4; j++)
+		{
 			if (sh[j][i] && (1<=x+i&&x+i<=WIDTH&&1<=y+j&&y+j<=HEIGHT))
-				drawAt(x + i, y + j, (erase ? noChar : shapeChar));
+			{
+				gotoxy(x+i, y+j);
+				cout << "  ";
+			}
+		}
+	}
+	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 }
 
 bool board[HEIGHT+9][WIDTH+9], temp[HEIGHT+9][WIDTH+9];
@@ -164,9 +177,24 @@ void toBoard(int x, int y, const int sh[4][4])
 
 void printBoard()
 {
+	SetConsoleTextAttribute(hConsole, BACKGROUND_RED);
 	for (int x = 1; x <= WIDTH; x++)
+	{
 		for (int y = 1; y <= HEIGHT; y++)
-			drawAt(x, y, (board[y][x] ? shapeChar : noChar));
+		{
+			if (board[y][x])
+			{
+				SetConsoleTextAttribute(hConsole, BACKGROUND_BLUE);
+			}
+			else
+			{
+				SetConsoleTextAttribute(hConsole, 0);
+			}
+			gotoxy(x, y);
+			cout << "  ";
+		}
+	}
+	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 }
 
 void elimLines(bool anim = true)
@@ -388,6 +416,7 @@ int main()
 	while (1)
 	{
 		game();
+		SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 		gotoxy(0, HEIGHT + 2);
 		cout << "GAME OVER" << endl;
 		cout << "NUMBER OF ROWS ELIMINATED: " << lineCnt << endl;
@@ -396,9 +425,9 @@ int main()
 			if (kbhit() && getch() == 'r')
 				break;
 		gotoxy(0, HEIGHT + 2);
-		cout << "                       " << endl;
-		cout << "                       " << endl;
-		cout << "                       " << endl;
+		cout << "                             " << endl;
+		cout << "                             " << endl;
+		cout << "                             " << endl;
 	}
 	return 0;
 }
