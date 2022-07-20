@@ -365,6 +365,7 @@ void game()
 
 int main()
 {
+	system("title TETRIS");
 	consoleInit();
 	cout << "press any key to start";
 	while (true)

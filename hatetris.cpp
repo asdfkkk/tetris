@@ -28,7 +28,7 @@ void gotoxy(int x, int y)
 }
 
 const int WIDTH = 10;
-const int HEIGHT = 20;
+const int HEIGHT = 24;
 
 const int shape[7][4][4] =
 	{
@@ -469,6 +469,7 @@ void game()
 
 int main()
 {
+	system("title HATETETRIS = HATE + TETRIS   THE TETRIS THAT HATES YOU");
 	consoleInit();
 	while (1)
 	{
