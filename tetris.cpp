@@ -235,12 +235,27 @@ void spawn()
 	ty = spawny(tNo);
 }
 
+void drawLimit()
+{
+	SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+	for (int x = 1; x <= WIDTH; x++)
+	{
+		if (board[4][x])
+		{
+			continue;
+		}
+		gotoxy(x, 4);
+		cout << "__";
+	}
+}
+
 void left()
 {
 	if (valid(tx - 1, ty, tShape))
 	{
 		drawShape(tx, ty, tShape, true);
 		tx--;
+		drawLimit();
 		drawShape(tx, ty, tShape, 0, BACKGROUND_RED);
 	}
 }
@@ -251,6 +266,7 @@ void right()
 	{
 		drawShape(tx, ty, tShape, true);
 		tx++;
+		drawLimit();
 		drawShape(tx, ty, tShape, 0, BACKGROUND_RED);
 	}
 }
@@ -267,11 +283,13 @@ void rotate()
 		tx++;
 	else
 		rotateShape(tShape, tNo, 3);
+	drawLimit();
 	drawShape(tx, ty, tShape, 0, BACKGROUND_RED);
 }
 
 void info()
 {
+	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 	gotoxy(WIDTH + 4, 3);
 	cout << "PRESS P TO PAUSE" << endl;
 	gotoxy(WIDTH + 4, 4);
@@ -288,6 +306,7 @@ void info()
 
 void pause()
 {
+	SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 	gotoxy(WIDTH+4,3);
 	cout << "PRESS P TO CONTINUE" << endl;
 	while (true)
@@ -309,6 +328,7 @@ void game()
 	bool downKey;
 	init();
 	spawn();
+	drawLimit();
 	drawShape(tx, ty, tShape, 0, BACKGROUND_RED);
 	info();
 	downClock = clock();
@@ -343,10 +363,24 @@ void game()
 		{
 			if (!valid(tx, ty + 1, tShape))
 			{
+				bool fail = false;
+				for (int i = 0; i < 4; i++)
+				{
+					for (int j = 0; j < 4; j++)
+					{
+						if (tShape[j][i] && ty+j<=4)
+						{
+							fail = true;
+						}
+					}
+				}
 				toBoard(tx, ty, tShape);
 				printBoard();
+				drawLimit();
+				if(fail)break;
 				elimLines();
 				info();
+				drawLimit();
 				spawn();
 				if (!valid(tx, ty, tShape))
 					break;
@@ -355,8 +389,10 @@ void game()
 				downClock = clock();
 				continue;
 			}
+			drawLimit();
 			drawShape(tx, ty, tShape, 1);
 			ty++;
+			drawLimit();
 			drawShape(tx, ty, tShape, 0, BACKGROUND_RED);
 			downClock = clock();
 		}
@@ -378,6 +414,7 @@ int main()
 	{
 		game();
 		gotoxy(0, HEIGHT + 2);
+		SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 		cout << "GAME OVER" << endl;
 		cout << "SCORE: " << score << endl;
 		cout << "PRESS R TO RESTART" << endl;
@@ -385,9 +422,9 @@ int main()
 			if (kbhit() && getch() == 'r')
 				break;
 		gotoxy(0, HEIGHT + 2);
-		cout << "        " << endl;
 		cout << "                     " << endl;
-		cout << "                  " << endl;
+		cout << "                     " << endl;
+		cout << "                     " << endl;
 	}
 	return 0;
 }
