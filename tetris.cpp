@@ -9,6 +9,10 @@ using namespace std;
 
 HANDLE hConsole;
 
+bool started;
+
+void gotoxy(int, int);
+
 BOOL WINAPI consoleHandler(DWORD signal) {
     if (signal == CTRL_C_EVENT) {
         hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -16,6 +20,9 @@ BOOL WINAPI consoleHandler(DWORD signal) {
         info.dwSize = 100;
         info.bVisible = TRUE;
         SetConsoleCursorInfo(hConsole, &info);
+        SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
+        if (started) gotoxy(0, 24 + 2);
+        cout << "GAME QUIT" << endl;
         exit(0);
     }
     return TRUE;
@@ -299,6 +306,10 @@ void rotate()
     drawShape(tx, ty, tShape, 0, BACKGROUND_RED);
 }
 
+int nextClock;
+int nextColor;
+int nextColorTable[3] = {0x1 | 0x2, 0x1 | 0x4, 0x2 | 0x4};
+
 void info()
 {
     SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
@@ -314,8 +325,6 @@ void info()
     cout << "DIFFICULTY: " << lvl << "              " << endl;
     gotoxy(WIDTH + 4, 6);
     cout << "SCORE: " << score << "              " << endl;
-    gotoxy(WIDTH + 4, 7);
-    cout << "NEXT: " << endl;
     drawShape(WIDTH + 6, 9, emptyShape, true);
     drawShape(WIDTH + 6, 9, shape[tNextNo], 0, BACKGROUND_GREEN);
     gotoxy(WIDTH + 4, 12);
@@ -427,6 +436,15 @@ void game()
             drawShape(tx, ty, tShape, 0, BACKGROUND_RED);
             downClock = clock();
         }
+        if (!nextClock || clock() - nextClock >= 1000) {
+            gotoxy(WIDTH + 4, 7);
+            SetConsoleTextAttribute(hConsole, nextColorTable[nextColor]);
+            cout << "NEXT: " << endl;
+            nextColor++;
+            if (nextColor == 3) nextColor = 0;
+            nextClock = clock();
+        }
+       
     }
 }
 
@@ -447,6 +465,7 @@ int main()
             getch();
             break;
         }
+    started = true;
     while (1)
     {
         system("cls");
