@@ -427,7 +427,11 @@ int main()
 {
     system("title TETRIS");
     consoleInit();
-    cout << "press any key to start";
+    cout << "GUIDE:" << endl;
+    cout << "press A/D or left/right arrow to move" << endl;
+    cout << "press W/up arrow to rotate clockwise" << endl;
+    cout << "press S or down arrow to drop faster" << endl;
+    cout << "PRESS ANY KEY TO START TETRIS" << endl;
     while (true)
         if (kbhit())
         {
