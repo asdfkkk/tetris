@@ -9,6 +9,18 @@ using namespace std;
 
 HANDLE hConsole;
 
+BOOL WINAPI consoleHandler(DWORD signal) {
+    if (signal == CTRL_C_EVENT) {
+        hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+        CONSOLE_CURSOR_INFO info;
+        info.dwSize = 100;
+        info.bVisible = TRUE;
+        SetConsoleCursorInfo(hConsole, &info);
+        exit(0);
+    }
+    return TRUE;
+}
+
 void consoleInit()
 {
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -16,6 +28,7 @@ void consoleInit()
     info.dwSize = 100;
     info.bVisible = FALSE;
     SetConsoleCursorInfo(hConsole, &info);
+    SetConsoleCtrlHandler(consoleHandler, TRUE);
 }
 
 void gotoxy(int x, int y)
@@ -289,8 +302,12 @@ void rotate()
 void info()
 {
     SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
+    gotoxy(WIDTH + 4, 2);
+    cout << "Press Ctrl-C to quit." << endl;
+    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
     gotoxy(WIDTH + 4, 3);
     cout << "PRESS P TO PAUSE" << endl;
+    SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
     gotoxy(WIDTH + 4, 4);
     cout << "NUMBER OF ROWS ELIMINATED: " << lineCnt << "              " << endl;
     gotoxy(WIDTH + 4, 5);
@@ -305,14 +322,17 @@ void info()
 
 void pause()
 {
-    SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
     gotoxy(WIDTH + 4, 3);
     cout << "PRESS P TO CONTINUE" << endl;
+    SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
     while (true)
         if (kbhit() && getch() == 'p')
             break;
     gotoxy(WIDTH + 4, 3);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
     cout << "PRESS P TO PAUSE      " << endl;
+    SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
 }
 
 bool keyPress(int key)
@@ -416,6 +436,7 @@ int main()
         }
     while (1)
     {
+        system("cls");
         game();
         gotoxy(0, HEIGHT + 2);
         SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
