@@ -1,3 +1,0 @@
-# tetris
-
-simple cli tetris
