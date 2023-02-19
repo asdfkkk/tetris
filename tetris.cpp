@@ -318,6 +318,13 @@ void info()
     cout << "NEXT: " << endl;
     drawShape(WIDTH + 6, 9, emptyShape, true);
     drawShape(WIDTH + 6, 9, shape[tNextNo], 0, BACKGROUND_GREEN);
+    gotoxy(WIDTH + 4, 12);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
+    cout << "press A/D or left/right arrow to move" << endl;
+    gotoxy(WIDTH + 4, 13);
+    cout << "press W/up arrow to rotate clockwise" << endl;
+    gotoxy(WIDTH + 4, 14);
+    cout << "press S or down arrow to drop faster" << endl;
 }
 
 void pause()
@@ -427,10 +434,12 @@ int main()
 {
     system("title TETRIS");
     consoleInit();
+    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
     cout << "GUIDE:" << endl;
     cout << "press A/D or left/right arrow to move" << endl;
     cout << "press W/up arrow to rotate clockwise" << endl;
     cout << "press S or down arrow to drop faster" << endl;
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
     cout << "PRESS ANY KEY TO START TETRIS" << endl;
     while (true)
         if (kbhit())
