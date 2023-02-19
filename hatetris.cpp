@@ -9,6 +9,9 @@
 using namespace std;
 
 HANDLE hConsole;
+bool started;
+
+BOOL WINAPI consoleHandler(DWORD);
 
 void consoleInit()
 {
@@ -17,6 +20,7 @@ void consoleInit()
     info.dwSize = 100;
     info.bVisible = FALSE;
     SetConsoleCursorInfo(hConsole, &info);
+    SetConsoleCtrlHandler(consoleHandler, TRUE);
 }
 
 void gotoxy(int x, int y)
@@ -29,6 +33,21 @@ void gotoxy(int x, int y)
 
 const int WIDTH = 10;
 const int HEIGHT = 24;
+
+BOOL WINAPI consoleHandler(DWORD signal) {
+    if (signal == CTRL_C_EVENT) {
+        hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+        CONSOLE_CURSOR_INFO info;
+        info.dwSize = 100;
+        info.bVisible = TRUE;
+        SetConsoleCursorInfo(hConsole, &info);
+        SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
+        if (started) gotoxy(0, HEIGHT + 2);
+        cout << "GAME QUIT" << endl;
+        exit(0);
+    }
+    return TRUE;
+}
 
 const int shape[7][4][4] =
     {
@@ -483,10 +502,26 @@ void game()
 
 int main()
 {
-    system("title HATETETRIS = HATE + TETRIS   THE TETRIS THAT HATES YOU");
+    system("title HATETETRIS = HATE + TETRIS");
     consoleInit();
+    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+    cout << "GUIDE:" << endl;
+    cout << "press left/right arrow to move" << endl;
+    cout << "press up arrow to rotate clockwise" << endl;
+    cout << "press down arrow to drop, the tetrinos are not going to drop automatically" << endl;
+    cout << "TIP: The tetris hates you, so just survive as long as you can :)" << endl;
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+    cout << "PRESS ANY KEY TO START HATETRIS" << endl;
+    while (true)
+        if (kbhit())
+        {
+            getch();
+            break;
+        }
+    started = true;
     while (1)
     {
+        system("cls");
         game();
         SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
         gotoxy(0, HEIGHT + 2);
