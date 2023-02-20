@@ -8,38 +8,9 @@
 using namespace std;
 
 HANDLE hConsole;
-
 bool started;
 
-void gotoxy(int, int);
-
-BOOL WINAPI consoleHandler(DWORD signal) {
-    if (signal == CTRL_C_EVENT) {
-        hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-        CONSOLE_CURSOR_INFO info;
-        info.dwSize = 100;
-        info.bVisible = TRUE;
-        SetConsoleCursorInfo(hConsole, &info);
-        SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
-        if (started) gotoxy(0, 24 + 2);
-        cout << "GAME QUIT" << endl;
-        exit(0);
-    }
-    return TRUE;
-}
-
-void consoleInit()
-{
-    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_CURSOR_INFO info;
-    info.dwSize = 100;
-    info.bVisible = FALSE;
-    SetConsoleCursorInfo(hConsole, &info);
-    SetConsoleCtrlHandler(consoleHandler, TRUE);
-}
-
-void gotoxy(int x, int y)
-{
+void gotoxy(int x, int y) {
     COORD coord;
     coord.X = x * 2;
     coord.Y = y;
@@ -51,6 +22,30 @@ const int HEIGHT = 24;
 const string noChar = "1";
 const string tetrionChar = "2";
 const string shapeChar = "3";
+
+BOOL WINAPI consoleHandler(DWORD signal) {
+    if (signal == CTRL_C_EVENT) {
+        hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+        CONSOLE_CURSOR_INFO info;
+        info.dwSize = 100;
+        info.bVisible = TRUE;
+        SetConsoleCursorInfo(hConsole, &info);
+        SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
+        if (started) gotoxy(0, HEIGHT + 2);
+        cout << "GAME QUIT" << endl;
+        exit(0);
+    }
+    return TRUE;
+}
+
+void consoleInit() {
+    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_CURSOR_INFO info;
+    info.dwSize = 100;
+    info.bVisible = FALSE;
+    SetConsoleCursorInfo(hConsole, &info);
+    SetConsoleCtrlHandler(consoleHandler, TRUE);
+}
 
 const int shape[7][4][4] =
     {
